@@ -37,7 +37,7 @@
 #   }
 #
 class oae::app::server( $downloadurl = '',
-						$cap_deploy  = 'false',
+						$deploy      = 'true',
                         $jarsource   = '',
 						$jardest     = '',
                         $java        = '/usr/bin/java',
@@ -99,8 +99,9 @@ class oae::app::server( $downloadurl = '',
 	
     $app_jar = "${oae::params::basedir}/sakaioae.jar"
 
-    # Only worry about downloading/copying binary of capistrano isn't in control
-	if ($cap_deploy == 'false') {
+    # Option to not deploy any binary
+	if ($deploy == 'true') {
+		
 	    exec { 'fetch-package':
 	        command => $downloadurl ? {
 	            ''      => "cp ${jarsource} .",
