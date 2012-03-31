@@ -37,7 +37,9 @@
 #   }
 #
 class oae::app::server( $downloadurl = '',
+						$deploy      = 'true',
                         $jarsource   = '',
+						$jardest     = '',
                         $java        = '/usr/bin/java',
                         $javamemorymax,
                         $javamemorymin,
@@ -90,23 +92,31 @@ class oae::app::server( $downloadurl = '',
         default => inline_template("<%= File.basename('${downloadurl}') %>"),
     }
 
-    $jar_dest = "${oae::params::basedir}/jars/${jar_file}"
+	$jar_dest = $jardest ? {
+		'' 		=> "${oae::params::basedir}/jars/${jar_file}",
+		default => $jardest,
+	}
+	
     $app_jar = "${oae::params::basedir}/sakaioae.jar"
 
-    exec { 'fetch-package':
-        command => $downloadurl ? {
-            ''      => "cp ${jarsource} .",
-            default => "curl --silent ${downloadurl} --output ${jar_dest}",
-        },
-        cwd     => "${oae::params::basedir}/jars/",
-        creates => $jar_dest,
-        require => File["${oae::params::basedir}/jars/"],
-    }
+    # Option to not deploy any binary
+	if ($deploy == 'true') {
+		
+	    exec { 'fetch-package':
+	        command => $downloadurl ? {
+	            ''      => "cp ${jarsource} .",
+	            default => "curl --silent ${downloadurl} --output ${jar_dest}",
+	        },
+	        cwd     => "${oae::params::basedir}/jars/",
+	        creates => $jar_dest,
+	        require => File["${oae::params::basedir}/jars/"],
+	    }
+	}
+    
 
     file { $app_jar:
         ensure  => link,
         target  => $jar_dest,
-        require => Exec['fetch-package'],
         notify  => Service['sakaioae'],
     }
 
