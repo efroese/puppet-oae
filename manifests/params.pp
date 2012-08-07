@@ -26,6 +26,8 @@ class oae::params(  $user='sakaioae',
 
     $logs = '/var/log/sakaioae'
 
+    $preview_log_dir = '/var/log/sakaioae/preview'
+
     file { $logs:
         ensure => directory,
         owner  => root,
