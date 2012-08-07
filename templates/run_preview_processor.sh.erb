@@ -8,9 +8,10 @@ BASE_DIR="<%= scope.lookupvar('oae::params::basedir') %>"
 
 <% if scope.lookupvar('oae::preview_processor::common::pp_mode') == 'ruby' %>
 SCRIPT_DIR="${BASE_DIR}/nakamura/scripts";
-<% else if scope.lookupvar('oae::preview_processor::common::pp_mode') == 'java' %>
+<% end -%>
+<% if scope.lookupvar('oae::preview_processor::common::pp_mode') == 'java' %>
 SCRIPT_DIR="<%= scope.lookupvar('oae::preview_processor::java::working_directory') %>";
-<% end %>
+<% end -%>
 PASSWORD_FILE="${BASE_DIR}/.oae_credentials.txt";
 PROCESSING_URL="var/search/needsprocessing.json";
 ##############################################################################
@@ -75,6 +76,7 @@ check_processing_url=`curl --insecure --head --silent ${SAKAIOAE_URL}${PROCESSIN
 
 if [ "${?}" = "0" ] ; then
     # Run the preview processor:
+
     <% if scope.lookupvar('oae::preview_processor::common::pp_mode') == 'ruby' %>
         ruby ${SCRIPT_DIR}/preview_processor.rb --server ${SAKAIOAE_URL} --password ${PASSWORD} --count 1 | grep -v "^I,";
 
@@ -87,19 +89,19 @@ if [ "${?}" = "0" ] ; then
             rm -f ${SCRIPT_DIR}/.contentpreview.lock;
             exit 7;
         fi
-
-    <% else if scope.lookupvar('oae::preview_processor::common::pp_mode') == 'java' %>
+    <% end %>
+    <% if scope.lookupvar('oae::preview_processor::common::pp_mode') == 'java' %>
         java -jar ${BASE_DIR}/preview/preview.jar --server ${SAKAIOAE_URL} \
-            --content <%= scope.lookupvar('oae::preview_processor::java::content_url') %> \
-            --user <%= scope.lookupvar('oae::preview_processor::common::user') %> \
-            --password <%= scope.lookupvar('oae::preview_processor::common::password') %> \
-            --directory <%= scope.lookupvar('oae::preview_processor::java::working_directory') %> \
+            --content    <%= scope.lookupvar('oae::preview_processor::java::content_url') %> \
+            --user       <%= scope.lookupvar('oae::preview_processor::common::user') %> \
+            --password   <%= scope.lookupvar('oae::preview_processor::common::password') %> \
+            --directory  <%= scope.lookupvar('oae::preview_processor::java::working_directory') %> \
             --count 1 >> <%= scope.lookupvar('oae::params::preview_log_dir') %>/preview.log;
         return_code=${?};
-        if [ "${return_code}" = "1" ] ; then
+        if [ "${return_code}" = "0" ] ; then
             touch ${SCRIPT_DIR}/.contentpreview.success;
         else
-            echo "ERROR: ruby ${SCRIPT_DIR}/preview_processor.rb returned non-one exit code: '${return_code}'";
+            echo "ERROR: ruby ${SCRIPT_DIR}/preview_processor.rb returned non-zero exit code: '${return_code}'";
             rm -f ${SCRIPT_DIR}/.contentpreview.lock;
             exit 7;
         fi
@@ -123,4 +125,3 @@ popd > /dev/null;
 ##############################################################################
 
 exit 0;
-
