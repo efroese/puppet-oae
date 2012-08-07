@@ -96,7 +96,7 @@ if [ "${?}" = "0" ] ; then
             --user       <%= scope.lookupvar('oae::preview_processor::common::user') %> \
             --password   <%= scope.lookupvar('oae::preview_processor::common::password') %> \
             --directory  <%= scope.lookupvar('oae::preview_processor::java::working_directory') %> \
-            --count 1 >> <%= scope.lookupvar('oae::params::preview_log_dir') %>/preview.log;
+            --count 1 >> <%= scope.lookupvar('oae::params::preview_log_dir') %>/`date +%Y-%m-%d`.log;
         return_code=${?};
         if [ "${return_code}" = "0" ] ; then
             touch ${SCRIPT_DIR}/.contentpreview.success;
