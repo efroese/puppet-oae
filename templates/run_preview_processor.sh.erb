@@ -91,7 +91,14 @@ if [ "${?}" = "0" ] ; then
         fi
     <% end %>
     <% if scope.lookupvar('oae::preview_processor::common::pp_mode') == 'java' %>
-        java -jar ${BASE_DIR}/preview/preview.jar --server ${SAKAIOAE_URL} \
+
+        LOGBACK_FILE="${BASE_DIR}/preview/logback.xml"
+        LOGBACK_XML_ARG=""
+        if [[ -f ${LOGBACK_FILE} ]]; then
+            LOGBACK_XML_ARG="-Dlogback.configurationFile=${LOGBACK_FILE}"
+        fi
+
+        java ${LOGBACK_XML_ARG} -jar ${BASE_DIR}/preview/preview.jar --server ${SAKAIOAE_URL} \
             --content    <%= scope.lookupvar('oae::preview_processor::java::content_url') %> \
             --user       <%= scope.lookupvar('oae::preview_processor::common::user') %> \
             --password   <%= scope.lookupvar('oae::preview_processor::common::password') %> \
