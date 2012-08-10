@@ -21,8 +21,8 @@ class oae::preview_processor::ruby (
         $upload_url,
         $nakamura_zip='http://nodeload.github.com/sakaiproject/nakamura/zipball/master') {
 
-    Class['oae::params'] -> Class['oae::preview_processor::init']
-    Class['oae::params::common'] -> Class['oae::preview_processor::init']
+    Class['oae::params'] -> Class['oae::preview_processor::ruby']
+    Class['oae::preview_processor::common'] -> Class['oae::preview_processor::ruby']
 
     class { 'oae::preview_processor::common':
         user           => $user,
