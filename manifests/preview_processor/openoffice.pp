@@ -22,7 +22,7 @@ class oae::preview_processor::openoffice {
                     'libreoffice-math-core',
                     'libreoffice-writer-core' ]:
             ensure => installed,
-            notify => File['/usr/lib/openoffice'],
+            notify => File['/usr/lib/libreoffice'],
         }
     }
     # Create Link /usr/lib/libreoffice
