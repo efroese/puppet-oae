@@ -44,7 +44,7 @@ class oae::preview_processor::java (
     Class['Oae::Params'] -> Class['Oae::Preview_processor::Java']
     Class['Oae::Preview_processor::Common'] -> Class['Oae::Preview_processor::Java']
 
-    $home = "${oae::params::basedir}/preview/" 
+    $home = "${oae::params::basedir}/preview" 
     $working_directory = $directory ? {
         ''      => "${home}/scratch",
         default => $directory,
